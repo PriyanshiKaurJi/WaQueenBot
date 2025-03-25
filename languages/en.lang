@@ -1,0 +1,9 @@
+command_not_found=❌ Command "{command}" not found.
+no_permission=❌ You don't have permission to use "{command}".
+cooldown_message=⏳ You're using "{command}" too fast. Wait {timeleft}s.
+welcome_group=👋 Hello @user, welcome to @group!
+goodbye_group=👋 @user has left @group.
+prefix_info=ℹ️ My prefix is: {prefix}
+welcome_bot_group=👋 Hello everyone! I'm {botName}, a simple WhatsApp bot. Thanks for adding me to *{groupName}*!\n\nMy prefix is: `{prefix}`. Type `{prefix}help` to see my commands.\n\nI'm here to assist and make this group more interactive. Let's have fun! 😊
+welcome_user_group=🎉 Welcome to *{groupName}*, @{userName}! 👋\n\nWe're glad to have you here. Introduce yourself and enjoy the group! 😊
+welcome_generic_group=🎉 Welcome to *{groupName}*! 👋\n\nWe're glad to have you here. Introduce yourself and enjoy the group! 😊
