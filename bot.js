@@ -5,20 +5,25 @@ const fs = require('fs');
 const readline = require("readline");
 const PhoneNumber = require('awesome-phonenumber');
 const gradient = require('gradient-string');
+const config = require('./config.json');
+const { logInfo, logSuccess, logError } = require('./utils/logger');
 
+// Set logging level from config
+const loggerLevel = config.logLevel || 'silent';
+const logger = pino({ level: loggerLevel });
 const store = makeInMemoryStore({ logger: pino().child({ level: 'silent', stream: 'store' }) });
 
 const question = (text) => {
     const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
     return new Promise((resolve) => {
-        rl.question(text, resolve)
+        rl.question(text, resolve);
     });
 };
 
 async function startBotz() {
     const { state, saveCreds } = await useMultiFileAuthState("session");
     const ptz = makeWASocket({
-        logger: pino({ level: "silent" }),
+        logger: logger, 
         printQRInTerminal: true,
         auth: state,
         connectTimeoutMs: 60000,
@@ -33,10 +38,18 @@ async function startBotz() {
     });
 
     if (!ptz.authState.creds.registered) {
-        const phoneNumber = await question('Enter Phone Number :\n');
-        let code = await ptz.requestPairingCode(phoneNumber);
-        code = code?.match(/.{1,4}/g)?.join("-") || code;
-        console.log('Pairing Code:', code);
+        let phoneNumber;
+        if (config.botSettings.botNum) {
+            phoneNumber = config.botSettings.botNum;
+            logInfo('Using Bot Number from config.json:', phoneNumber);
+        } else {
+            phoneNumber = await question('Enter Phone Number :\n');
+        }
+        setTimeout(async () => {
+            let code = await ptz.requestPairingCode(phoneNumber);
+            code = code?.match(/.{1,4}/g)?.join("-") || code;
+            console.log('Pairing Code:', code);
+        }, 500);
     }
 
     store.bind(ptz.ev);
@@ -52,7 +65,7 @@ async function startBotz() {
             m = smsg(ptz, mek, store);
             require("./handler")(ptz, m, chatUpdate, store);
         } catch (err) {
-            console.log(err);
+            logError('Error processing message:', err); // Use logger function for errors
         }
     });
 
@@ -83,16 +96,21 @@ async function startBotz() {
 
     ptz.ev.on('connection.update', (update) => {
         const { connection, lastDisconnect } = update;
+        if (connection === 'connecting') { logInfo('Connecting to WhatsApp...'); } // Log connecting state
+        if (connection === 'open') {
+            logSuccess("\n========== Bot Connected ==========\n"); // Log success connection
+        }
         if (connection === 'close') {
             let reason = new Boom(lastDisconnect?.error)?.output.statusCode;
+            logInfo(`Connection closed due to reason: ${reason || 'Unknown'}`); // Log disconnect reason
             if (reason === DisconnectReason.badSession || reason === DisconnectReason.connectionClosed || reason === DisconnectReason.connectionLost || reason === DisconnectReason.connectionReplaced || reason === DisconnectReason.restartRequired || reason === DisconnectReason.timedOut) {
+                logInfo('Attempting to reconnect...'); // Log reconnection attempt
                 startBotz();
             } else if (reason === DisconnectReason.loggedOut) {
+                logError('Logged out. Please re-scan the QR code.'); // Log logged out state
             } else {
                 ptz.end(`Unknown DisconnectReason: ${reason}|${connection}`);
             }
-        } else if (connection === 'open') {
-            console.log(gradient.rainbow("\n========== Bot Connected ==========\n"));
         }
     });
 
@@ -112,10 +130,12 @@ async function startBotz() {
     };
 
     ptz.react = (jid, emoji, key) => {
-        return ptz.sendMessage(jid, { react: { text: emoji, key: key }});
+        return ptz.sendMessage(jid, { react: { text: emoji, key: key } });
     };
 
     return ptz;
+
+
 }
 
 startBotz();
@@ -148,7 +168,7 @@ function smsg(ptz, m, store) {
 let file = require.resolve(__filename);
 fs.watchFile(file, () => {
     fs.unwatchFile(file);
-    console.log(`Update ${__filename}`);
+    logInfo(`🔄 Updated ${__filename}`); // Use logger function for updates
     delete require.cache[file];
     require(file);
 });
