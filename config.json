@@ -1,0 +1,15 @@
+{
+  "botSettings": {
+    "ownerNumber": "919770202327",
+    "prefix": ".",
+    "botName": "QueenBot",
+    "timeZone": "Asia/Kolkata"
+  },
+  "database": {
+    "uriMongodb": "YOUR_MONGODB_URI",
+    "autoSyncWhenStart": true
+  },
+  "serverUptime": {
+    "port": 3000
+  }
+}
