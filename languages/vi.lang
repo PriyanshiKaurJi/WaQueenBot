@@ -1,0 +1,9 @@
+command_not_found=❌ Không tìm thấy lệnh "{command}".
+no_permission=❌ Bạn không có quyền sử dụng "{command}".
+cooldown_message=⏳ Bạn đang sử dụng "{command}" quá nhanh. Vui lòng đợi {timeleft} giây.
+welcome_group=👋 Xin chào @user, chào mừng đến với @group!
+goodbye_group=👋 @user đã rời khỏi @group.
+prefix_info=ℹ️ Tiền tố của tôi là: {prefix}
+welcome_bot_group=👋 Xin chào mọi người! Tôi là {botName}, một bot WhatsApp đơn giản. Cảm ơn vì đã thêm tôi vào *{groupName}*!\n\nTiền tố của tôi là: `{prefix}`. Gõ `{prefix}help` để xem các lệnh của tôi.\n\nTôi ở đây để hỗ trợ và làm cho nhóm này tương tác hơn. Hãy vui vẻ nhé! 😊
+welcome_user_group=🎉 Chào mừng đến với *{groupName}*, @{userName}! 👋\n\nChúng tôi rất vui khi có bạn ở đây. Hãy giới thiệu bản thân và tận hưởng nhóm nhé! 😊
+welcome_generic_group=🎉 Chào mừng đến với *{groupName}*! 👋\n\nChúng tôi rất vui khi có bạn ở đây. Hãy giới thiệu bản thân và tận hưởng nhóm nhé! 😊
