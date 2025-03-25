@@ -1,24 +1,28 @@
 {
-  "botSettings": {
-    "ownerNumber": "919770202327",
-    "prefix": ".",
-    "botName": "QueenBot",
-    "timeZone": "Asia/Kolkata",
-    "ownerName": "Priyanshi Kaur",
-    "githubRepo": "YOUR_GITHUB_REPO_LINK",
-    "defaultReactions": {
-      "success": "✅",
-      "error": "❌",
-      "wait": "⏳",
-      "info": "ℹ️",
-      "notFound": "❓"
-    }
-  },
-  "database": {
-    "uriMongodb": "mongodb+srv://priyanshikaurji:priyanshikaurji@cluster0.kcbnt.mongodb.net/Spectra?retryWrites=true&w=majority&appName=Cluster0",
-    "autoSyncWhenStart": true
-  },
-  "serverUptime": {
-    "port": 3000
-  }
+    "botSettings": {
+        "ownerNumber": "919770202327",
+        "prefix": ".",
+        "botName": "QueenBot",
+        "timeZone": "Asia/Kolkata",
+        "ownerName": "Priyanshi Kaur",
+        "githubRepo": "YOUR_GITHUB_REPO_LINK",
+        "botNum": "919770202327",
+        "defaultReactions": {
+            "success": "✅",
+            "error": "❌",
+            "wait": "⏳",
+            "info": "ℹ️",
+            "notFound": "❓"
+        }
+    },
+    "database": {
+        "uriMongodb": "mongodb+srv://priyanshikaurji:priyanshikaurji@cluster0.kcbnt.mongodb.net/Spectra?retryWrites=true&w=majority&appName=Cluster0",
+        "autoSyncWhenStart": true
+    },
+    "serverUptime": {
+        "port": 3000
+    },
+    "commandDirectory": "./scripts/cmds",
+    "eventDirectory": "./scripts/events", 
+    "logLevel": "info"
 }
