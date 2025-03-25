@@ -1,9 +1,18 @@
 {
   "botSettings": {
-    "ownerNumber": "919770202327",
-    "prefix": ".",
+    "ownerNumber": "YOUR_OWNER_NUMBER_WITH_COUNTRY_CODE",
+    "prefix": "!",
     "botName": "QueenBot",
-    "timeZone": "Asia/Kolkata"
+    "timeZone": "Asia/Kolkata",
+    "ownerName": "Your Name",
+    "githubRepo": "YOUR_GITHUB_REPO_LINK",
+    "defaultReactions": {
+      "success": "✅",
+      "error": "❌",
+      "wait": "⏳",
+      "info": "ℹ️",
+      "notFound": "❓"
+    }
   },
   "database": {
     "uriMongodb": "YOUR_MONGODB_URI",
