@@ -1,10 +1,10 @@
 {
   "botSettings": {
-    "ownerNumber": "YOUR_OWNER_NUMBER_WITH_COUNTRY_CODE",
-    "prefix": "!",
+    "ownerNumber": "919770202327",
+    "prefix": ".",
     "botName": "QueenBot",
     "timeZone": "Asia/Kolkata",
-    "ownerName": "Your Name",
+    "ownerName": "Priyanshi Kaur",
     "githubRepo": "YOUR_GITHUB_REPO_LINK",
     "defaultReactions": {
       "success": "✅",
@@ -15,7 +15,7 @@
     }
   },
   "database": {
-    "uriMongodb": "YOUR_MONGODB_URI",
+    "uriMongodb": "mongodb+srv://priyanshikaurji:priyanshikaurji@cluster0.kcbnt.mongodb.net/Spectra?retryWrites=true&w=majority&appName=Cluster0",
     "autoSyncWhenStart": true
   },
   "serverUptime": {
