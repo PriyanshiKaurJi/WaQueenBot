@@ -5,7 +5,7 @@ module.exports = {
     name: 'autoMessageEvent',
     event: async ({ sock }) => {
         if (!config.automaticMessages || !config.automaticMessages.enabled) {
-            return;
+            return; // Automatic messages are disabled or not configured
         }
 
         const now = moment().tz(config.botSettings.timeZone);
@@ -27,6 +27,25 @@ module.exports = {
                 console.error("Error sending good morning message:", error);
             }
         }
+
+        if (currentTime === config.automaticMessages.goodAfternoon.time) {
+            try {
+                await sock.sendText(targetJid, config.automaticMessages.goodAfternoon.message);
+                console.log(`[Auto Message Event] Sent Good Afternoon message to ${ownerNumber}`);
+            } catch (error) {
+                console.error("Error sending good afternoon message:", error);
+            }
+        }
+
+        if (currentTime === config.automaticMessages.goodEvening.time) {
+            try {
+                await sock.sendText(targetJid, config.automaticMessages.goodEvening.message);
+                console.log(`[Auto Message Event] Sent Good Evening message to ${ownerNumber}`);
+            } catch (error) {
+                console.error("Error sending good evening message:", error);
+            }
+        }
+
 
         if (currentTime === config.automaticMessages.goodNight.time) {
             try {
