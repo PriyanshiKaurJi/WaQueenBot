@@ -13,6 +13,13 @@
             "wait": "⏳",
             "info": "ℹ️",
             "notFound": "❓"
+        },
+        "automaticMessages": {
+            "goodMorning": { "time": "07:00", "message": "Good Morning! Have a great day!" },
+            "goodAfternoon": { "time": "13:00", "message": "Good Afternoon! Hope you are having a good day!" },
+            "goodEvening": { "time": "18:00", "message": "Good Evening! Time to wind down." },
+            "goodNight": { "time": "22:00", "message": "Good Night! Sweet dreams!" },
+            "enabled": true
         }
     },
     "database": {
@@ -23,6 +30,6 @@
         "port": 3000
     },
     "commandDirectory": "./scripts/cmds",
-    "eventDirectory": "./scripts/events", 
+    "eventDirectory": "./scripts/events",
     "logLevel": "info"
 }
