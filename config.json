@@ -1,35 +1,49 @@
 {
-    "botSettings": {
-        "ownerNumber": "919770202327",
-        "prefix": ".",
-        "botName": "QueenBot",
-        "timeZone": "Asia/Kolkata",
-        "ownerName": "Priyanshi Kaur",
-        "githubRepo": "YOUR_GITHUB_REPO_LINK",
-        "botNum": "919770202327",
-        "defaultReactions": {
-            "success": "✅",
-            "error": "❌",
-            "wait": "⏳",
-            "info": "ℹ️",
-            "notFound": "❓"
-        },
-        "automaticMessages": {
-            "goodMorning": { "time": "07:00", "message": "Good Morning! Have a great day!" },
-            "goodAfternoon": { "time": "13:00", "message": "Good Afternoon! Hope you are having a good day!" },
-            "goodEvening": { "time": "18:00", "message": "Good Evening! Time to wind down." },
-            "goodNight": { "time": "22:00", "message": "Good Night! Sweet dreams!" },
-            "enabled": true
-        }
+  "botSettings": {
+    "ownerNumber": "919770202327",
+    "prefix": ".",
+    "botName": "QueenBot",
+    "timeZone": "Asia/Kolkata",
+    "ownerName": "Priyanshi Kaur",
+    "githubRepo": "YOUR_GITHUB_REPO_LINK",
+    "defaultReactions": {
+      "success": "✅",
+      "error": "❌",
+      "wait": "⏳",
+      "info": "ℹ️",
+      "notFound": "❓"
     },
-    "database": {
-        "uriMongodb": "mongodb+srv://priyanshikaurji:priyanshikaurji@cluster0.kcbnt.mongodb.net/Spectra?retryWrites=true&w=majority&appName=Cluster0",
-        "autoSyncWhenStart": true
+    "sessionName": "session",
+    "defaultLanguage": "en",
+    "groupJoinMessage": "Hello @user, welcome to @group!",
+    "groupLeaveMessage": "@user has left @group.",
+    "enableGroupWelcome": true,
+    "enableGroupGoodbye": true
+  },
+  "database": {
+    "uriMongodb": "mongodb+srv://priyanshikaurji:priyanshikaurji@cluster0.kcbnt.mongodb.net/Spectra?retryWrites=true&w=majority&appName=Cluster0",
+    "autoSyncWhenStart": true
+  },
+  "serverUptime": {
+    "port": 3000
+  },
+  "automaticMessages": {
+    "enabled": true,
+    "goodMorning": {
+      "time": "07:00",
+      "message": "☀️ Good morning! Hope you have a great day!"
     },
-    "serverUptime": {
-        "port": 3000
+    "goodAfternoon": {
+      "time": "13:00",
+      "message": "☀️ Good afternoon! Time for a break?"
     },
-    "commandDirectory": "./scripts/cmds",
-    "eventDirectory": "./scripts/events",
-    "logLevel": "info"
+    "goodEvening": {
+      "time": "19:00",
+      "message": "🌆 Good evening! Relax and unwind."
+    },
+    "goodNight": {
+      "time": "22:00",
+      "message": "🌙 Good night! Sweet dreams!"
+    }
+  }
 }
