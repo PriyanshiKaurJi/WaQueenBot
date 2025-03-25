@@ -3,7 +3,7 @@ const figlet = require('figlet');
 const express = require('express');
 const mongoose = require('mongoose');
 const config = require('./config.json');
-const { logInfo, logSuccess, logError } = require('./utils/logger');
+const { logSuccess, logError, logInfo } = require('./utils/logger');
 
 console.clear();
 console.log('\n'.repeat(2));
@@ -15,31 +15,37 @@ const spectraText = figlet.textSync('QUEENBOT', { font: 'Small', horizontalLayou
 
 console.log(line);
 console.log(chalk.blueBright(spectraText));
-console.log(chalk.cyan.bold('QueenBot - A Simple WhatsApp Chat Bot'));
+console.log(chalk.cyan.bold('QueenBot-Alpha - Stable Version Coming Soon'));
 console.log(chalk.magenta('    Owner And Founder Priyanshi Kaur ✔️'));
 console.log(line);
 console.log(chalk.red.bold('\n⚠️  WARNING: Do not attempt to claim this project as your own.\n'));
 console.log(line);
-
-logInfo('Starting QueenBot...'); // Startup log
 
 const connectDatabase = async () => {
     try {
         await mongoose.connect(config.database.uriMongodb, { useNewUrlParser: true, useUnifiedTopology: true });
         logSuccess('✅ Connected to MongoDB.');
     } catch (error) {
-        logError('❌ MongoDB Connection Error:', error.message); 
+        logError('❌ MongoDB Connection Error:', error.message);
         process.exit(1);
     }
 };
 
-if (config.database.autoSyncWhenStart) {
-    connectDatabase();
-} else {
-    logInfo('Database auto-sync disabled in config.json.');
-}
+const startBot = async () => {
+    if (config.database.autoSyncWhenStart) {
+        await connectDatabase();
+    }
 
-require('./bot.js');
+    try {
+        await require('./bot.js')(); // Start bot.js and wait for it to initialize
+        logInfo('🔄 Bot initialization started.');
+    } catch (error) {
+        logError('❌ Failed to start bot:', error);
+        process.exit(1);
+    }
+};
+
+startBot();
 
 const app = express();
 const PORT = process.env.PORT || config.serverUptime.port;
@@ -49,7 +55,5 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    logSuccess(`🚀 Server is running on port ${PORT}`);
+    logSuccess(`🤦🏻‍♀️ Jezz server finnally running on port ${PORT}`);
 });
-
-logInfo('Configuration loaded:', config);
