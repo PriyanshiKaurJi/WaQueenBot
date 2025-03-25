@@ -1,11 +1,11 @@
 module.exports = {
     name: 'prefix',
-    description: 'Shows the current bot prefix',
+    description: 'Shows the bot prefix.',
+    cooldown: 5,
     permission: 0,
-    cooldowns: 5,
-    dmUser: true,
-    author: 'Priyanshi Kaur',
-    run: async ({ sock, m }) => {
-        await sock.sendMessage(m.key.remoteJid, { text: `My prefix is: \`${global.prefix}\`` }, { quoted: m });
-    },
+    run: async ({ sock, m, getString }) => {
+        const prefix = global.prefix;
+        const message = getString('prefix_info', { prefix: prefix });
+        await sock.sendMessage(m.key.remoteJid, { text: message }, { quoted: m });
+    }
 };
