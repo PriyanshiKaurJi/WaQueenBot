@@ -5,25 +5,21 @@ const fs = require('fs');
 const readline = require("readline");
 const PhoneNumber = require('awesome-phonenumber');
 const gradient = require('gradient-string');
-const config = require('./config.json');
-const { logInfo, logSuccess, logError } = require('./utils/logger');
+const { logInfo, logError } = require('./utils/logger');
 
-// Set logging level from config
-const loggerLevel = config.logLevel || 'silent';
-const logger = pino({ level: loggerLevel });
 const store = makeInMemoryStore({ logger: pino().child({ level: 'silent', stream: 'store' }) });
 
 const question = (text) => {
     const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
     return new Promise((resolve) => {
-        rl.question(text, resolve);
+        rl.question(text, resolve)
     });
 };
 
 async function startBotz() {
-    const { state, saveCreds } = await useMultiFileAuthState("session");
+    const { state, saveCreds } = await useMultiFileAuthState(config.botSettings.sessionName || "session");
     const ptz = makeWASocket({
-        logger: logger, 
+        logger: pino({ level: "silent" }),
         printQRInTerminal: true,
         auth: state,
         connectTimeoutMs: 60000,
@@ -38,18 +34,10 @@ async function startBotz() {
     });
 
     if (!ptz.authState.creds.registered) {
-        let phoneNumber;
-        if (config.botSettings.botNum) {
-            phoneNumber = config.botSettings.botNum;
-            logInfo('Using Bot Number from config.json:', phoneNumber);
-        } else {
-            phoneNumber = await question('Enter Phone Number :\n');
-        }
-        setTimeout(async () => {
-            let code = await ptz.requestPairingCode(phoneNumber);
-            code = code?.match(/.{1,4}/g)?.join("-") || code;
-            console.log('Pairing Code:', code);
-        }, 500);
+        const phoneNumber = await question('Enter Phone Number :\n');
+        let code = await ptz.requestPairingCode(phoneNumber);
+        code = code?.match(/.{1,4}/g)?.join("-") || code;
+        console.log('Pairing Code:', code);
     }
 
     store.bind(ptz.ev);
@@ -65,7 +53,7 @@ async function startBotz() {
             m = smsg(ptz, mek, store);
             require("./handler")(ptz, m, chatUpdate, store);
         } catch (err) {
-            logError('Error processing message:', err); // Use logger function for errors
+            logError('Error in messages.upsert event:', err);
         }
     });
 
@@ -77,40 +65,47 @@ async function startBotz() {
         } else return jid;
     };
 
-    ptz.getName = (jid, withoutContact = false) => {
+    ptz.getName = async (jid, withoutContact = false) => {
         id = ptz.decodeJid(jid);
         withoutContact = ptz.withoutContact || withoutContact;
         let v;
-        if (id.endsWith("@g.us")) return new Promise(async (resolve) => {
+        if (id.endsWith("@g.us")) {
             v = store.contacts[id] || {};
-            if (!(v.name || v.subject)) v = ptz.groupMetadata(id) || {};
-            resolve(v.name || v.subject || PhoneNumber('+' + id.replace('@s.whatsapp.net', '')).getNumber('international'));
-        });
-        else v = id === '0@s.whatsapp.net' ? { id, name: 'WhatsApp' } : id === ptz.decodeJid(ptz.user.id) ? ptz.user : (store.contacts[id] || {});
-        return (withoutContact ? '' : v.name) || v.subject || v.verifiedName || PhoneNumber('+' + jid.replace('@s.whatsapp.net', '')).getNumber('international');
+            if (!(v.name || v.subject)) {
+                try {
+                    v = await ptz.groupMetadata(id) || {};
+                } catch (error) {
+                    logError(`Failed to get group metadata for ${id}: ${error.message}`);
+                    return PhoneNumber('+' + id.replace('@s.whatsapp.net', '')).getNumber('international');
+                }
+            }
+            return v.name || v.subject || PhoneNumber('+' + id.replace('@s.whatsapp.net', '')).getNumber('international');
+        } else {
+            v = id === '0@s.whatsapp.net' ? { id, name: 'WhatsApp' } : id === ptz.decodeJid(ptz.user.id) ? ptz.user : (store.contacts[id] || {});
+            return (withoutContact ? '' : v.name) || v.subject || v.verifiedName || PhoneNumber('+' + jid.replace('@s.whatsapp.net', '')).getNumber('international');
+        }
     };
 
     ptz.public = true;
-
     ptz.serializeM = (m) => smsg(ptz, m, store);
 
     ptz.ev.on('connection.update', (update) => {
         const { connection, lastDisconnect } = update;
-        if (connection === 'connecting') { logInfo('Connecting to WhatsApp...'); } // Log connecting state
-        if (connection === 'open') {
-            logSuccess("\n========== Bot Connected ==========\n"); // Log success connection
-        }
         if (connection === 'close') {
             let reason = new Boom(lastDisconnect?.error)?.output.statusCode;
-            logInfo(`Connection closed due to reason: ${reason || 'Unknown'}`); // Log disconnect reason
+            logInfo(`Connection closed due to reason: ${reason || 'Unknown'}`);
             if (reason === DisconnectReason.badSession || reason === DisconnectReason.connectionClosed || reason === DisconnectReason.connectionLost || reason === DisconnectReason.connectionReplaced || reason === DisconnectReason.restartRequired || reason === DisconnectReason.timedOut) {
-                logInfo('Attempting to reconnect...'); // Log reconnection attempt
+                logInfo('Attempting to reconnect...');
                 startBotz();
             } else if (reason === DisconnectReason.loggedOut) {
-                logError('Logged out. Please re-scan the QR code.'); // Log logged out state
+                logError('Logged out. Please clear session and restart.');
             } else {
-                ptz.end(`Unknown DisconnectReason: ${reason}|${connection}`);
+                logError(`Unknown Disconnect Reason: ${reason}|${connection}`);
+                ptz.end(`Unknown Disconnect Reason: ${reason}|${connection}`);
             }
+        } else if (connection === 'open') {
+            console.log(gradient.rainbow("\n========== Bot Connected ==========\n"));
+            logSuccess('WhatsApp bot connected!');
         }
     });
 
@@ -133,9 +128,8 @@ async function startBotz() {
         return ptz.sendMessage(jid, { react: { text: emoji, key: key } });
     };
 
+    logInfo('Bot initialized and event handlers set up.');
     return ptz;
-
-
 }
 
 startBotz();
@@ -168,7 +162,7 @@ function smsg(ptz, m, store) {
 let file = require.resolve(__filename);
 fs.watchFile(file, () => {
     fs.unwatchFile(file);
-    logInfo(`🔄 Updated ${__filename}`); // Use logger function for updates
+    logInfo(`Update ${__filename}`);
     delete require.cache[file];
     require(file);
 });
