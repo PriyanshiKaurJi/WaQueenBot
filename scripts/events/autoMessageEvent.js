@@ -1,59 +1,39 @@
 const moment = require('moment-timezone');
 const config = require('../../config.json');
+const { logInfo, logError } = require('../../utils/logger');
 
 module.exports = {
     name: 'autoMessageEvent',
     event: async ({ sock }) => {
         if (!config.automaticMessages || !config.automaticMessages.enabled) {
-            return; // Automatic messages are disabled or not configured
+            return;
         }
 
         const now = moment().tz(config.botSettings.timeZone);
         const currentTime = now.format('HH:mm');
-        const ownerNumber = config.botSettings.ownerNumber; // Assuming ownerNumber is with country code but without '+'
+        const ownerNumber = config.botSettings.ownerNumber;
 
         if (!ownerNumber) {
-            console.warn("Owner number is not configured in config.json for automatic messages.");
+            logError("Owner number is not configured in config.json for automatic messages.");
             return;
         }
 
-        const targetJid = `${ownerNumber}@s.whatsapp.net`; // Assuming sending to owner for now
+        const targetJid = `${ownerNumber}@s.whatsapp.net`;
 
-        if (currentTime === config.automaticMessages.goodMorning.time) {
-            try {
-                await sock.sendText(targetJid, config.automaticMessages.goodMorning.message);
-                console.log(`[Auto Message Event] Sent Good Morning message to ${ownerNumber}`);
-            } catch (error) {
-                console.error("Error sending good morning message:", error);
+        const sendMessage = async (timeOfDay, message) => {
+            if (currentTime === config.automaticMessages[timeOfDay].time) {
+                try {
+                    await sock.sendText(targetJid, message);
+                    logInfo(`[Auto Message Event] Sent ${timeOfDay} message to ${ownerNumber}`);
+                } catch (error) {
+                    logError(`[Auto Message Event] Error sending ${timeOfDay} message to ${ownerNumber}: ${error.message}`);
+                }
             }
-        }
+        };
 
-        if (currentTime === config.automaticMessages.goodAfternoon.time) {
-            try {
-                await sock.sendText(targetJid, config.automaticMessages.goodAfternoon.message);
-                console.log(`[Auto Message Event] Sent Good Afternoon message to ${ownerNumber}`);
-            } catch (error) {
-                console.error("Error sending good afternoon message:", error);
-            }
-        }
-
-        if (currentTime === config.automaticMessages.goodEvening.time) {
-            try {
-                await sock.sendText(targetJid, config.automaticMessages.goodEvening.message);
-                console.log(`[Auto Message Event] Sent Good Evening message to ${ownerNumber}`);
-            } catch (error) {
-                console.error("Error sending good evening message:", error);
-            }
-        }
-
-
-        if (currentTime === config.automaticMessages.goodNight.time) {
-            try {
-                await sock.sendText(targetJid, config.automaticMessages.goodNight.message);
-                console.log(`[Auto Message Event] Sent Good Night message to ${ownerNumber}`);
-            } catch (error) {
-                console.error("Error sending good night message:", error);
-            }
-        }
+        await sendMessage('goodMorning', config.automaticMessages.goodMorning.message);
+        await sendMessage('goodAfternoon', config.automaticMessages.goodAfternoon.message);
+        await sendMessage('goodEvening', config.automaticMessages.goodEvening.message);
+        await sendMessage('goodNight', config.automaticMessages.goodNight.message);
     },
 };
