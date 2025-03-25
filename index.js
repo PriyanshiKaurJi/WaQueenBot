@@ -3,6 +3,7 @@ const figlet = require('figlet');
 const express = require('express');
 const mongoose = require('mongoose');
 const config = require('./config.json');
+const { logInfo, logSuccess, logError } = require('./utils/logger');
 
 console.clear();
 console.log('\n'.repeat(2));
@@ -20,18 +21,22 @@ console.log(line);
 console.log(chalk.red.bold('\n⚠️  WARNING: Do not attempt to claim this project as your own.\n'));
 console.log(line);
 
+logInfo('Starting QueenBot...'); // Startup log
+
 const connectDatabase = async () => {
     try {
         await mongoose.connect(config.database.uriMongodb, { useNewUrlParser: true, useUnifiedTopology: true });
-        console.log(chalk.green.bold('✅ Connected to MongoDB.'));
+        logSuccess('✅ Connected to MongoDB.');
     } catch (error) {
-        console.error(chalk.red.bold('❌ MongoDB Connection Error:'), error.message);
+        logError('❌ MongoDB Connection Error:', error.message); 
         process.exit(1);
     }
 };
 
 if (config.database.autoSyncWhenStart) {
     connectDatabase();
+} else {
+    logInfo('Database auto-sync disabled in config.json.');
 }
 
 require('./bot.js');
@@ -44,5 +49,7 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(chalk.green.bold(`Server is running on port ${PORT}`));
+    logSuccess(`🚀 Server is running on port ${PORT}`);
 });
+
+logInfo('Configuration loaded:', config);
