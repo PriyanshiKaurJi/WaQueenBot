@@ -1,11 +1,16 @@
 {
   "botSettings": {
     "ownerNumber": "919770202327",
+    "botNumber": "919770202327",
     "prefix": ".",
     "botName": "QueenBot",
     "timeZone": "Asia/Kolkata",
     "ownerName": "Priyanshi Kaur",
-    "githubRepo": "YOUR_GITHUB_REPO_LINK",
+    "sessionName": "queenbot_session",
+    "defaultLanguage": "en",
+    "githubRepo": "https://github.com/yourusername/QueenBot",
+    "maxCommandRetries": 3,
+    "enableReadReceipts": true,
     "defaultReactions": {
       "success": "✅",
       "error": "❌",
@@ -13,37 +18,70 @@
       "info": "ℹ️",
       "notFound": "❓"
     },
-    "sessionName": "session",
-    "defaultLanguage": "en",
-    "groupJoinMessage": "Hello @user, welcome to @group!",
-    "groupLeaveMessage": "@user has left @group.",
-    "enableGroupWelcome": true,
-    "enableGroupGoodbye": true
+    "groupSettings": {
+      "joinMessage": "Hello @user, welcome to @group!",
+      "leaveMessage": "@user has left @group.",
+      "enableWelcome": true,
+      "enableGoodbye": true,
+      "maxGroups": 50,
+      "adminOnlyCommands": true
+    },
+    "rateLimiting": {
+      "enabled": true,
+      "commandsPerMinute": 30,
+      "banDuration": "30m"
+    }
   },
   "database": {
     "uriMongodb": "mongodb+srv://priyanshikaurji:priyanshikaurji@cluster0.kcbnt.mongodb.net/Spectra?retryWrites=true&w=majority&appName=Cluster0",
-    "autoSyncWhenStart": true
+    "autoSyncWhenStart": true,
+    "backupInterval": "6h"
   },
   "serverUptime": {
-    "port": 3000
+    "port": 3000,
+    "uptimeMonitor": true,
+    "monitorUrl": "https://your-monitor-service.com"
   },
   "automaticMessages": {
     "enabled": true,
-    "goodMorning": {
-      "time": "07:00",
-      "message": "☀️ Good morning! Hope you have a great day!"
-    },
-    "goodAfternoon": {
-      "time": "13:00",
-      "message": "☀️ Good afternoon! Time for a break?"
-    },
-    "goodEvening": {
-      "time": "19:00",
-      "message": "🌆 Good evening! Relax and unwind."
-    },
-    "goodNight": {
-      "time": "22:00",
-      "message": "🌙 Good night! Sweet dreams!"
-    }
+    "messages": [
+      {
+        "time": "07:00",
+        "message": "☀️ Good morning! Have a wonderful day ahead!",
+        "target": "user" 
+      },
+      {
+        "time": "12:00",
+        "message": "🍃 Good afternoon! Take a break and recharge!",
+        "target": "groups" 
+      },
+      {
+        "time": "18:00",
+        "message": "🌆 Good evening! Hope you had a productive day!",
+        "target": "all"
+      },
+      {
+        "time": "22:00",
+        "message": "🌙 Good night! Sweet dreams!",
+        "target": "user"
+      }
+    ]
+  },
+  "security": {
+    "blockedNumbers": [],
+    "allowedGroups": [],
+    "antiSpam": true,
+    "maxMessageLength": 1000
+  },
+  "mediaSettings": {
+    "maxUploadSizeMB": 16,
+    "allowedTypes": ["image", "video", "audio", "document"],
+    "autoDownloadMedia": true
+  },
+  "debug": {
+    "logLevel": "info",
+    "logCommands": true,
+    "logErrors": true,
+    "logDatabase": false
   }
 }
